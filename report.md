@@ -43,7 +43,7 @@ CSR中存在列索引和行偏移。CSR将稀疏邻接矩阵的行进行压缩�
 
 示例：
 
-![](C:\Users\蓝\Desktop\电梯图片\CSR.png)
+![](images\CSR.png)
 
 算法包括朴素的Dijkstra和堆优化的Dijkstra以及一些小优化。这个放在代码讲解中说明。
 
@@ -164,19 +164,20 @@ void dijkstra(ALGraph g, int src, int dst)
 
   假设有一个堆是这样：
 
-  ![](C:\Users\蓝\Desktop\电梯图片\堆1.png)
+  ![](images\堆1.png)
 
   这时候我要插入一个元素为0的结点，那么我先将其插入到堆底：
 
-  ![](C:\Users\蓝\Desktop\电梯图片\堆2.png)
+  ![](images\堆2.png)
 
   发现不太符合小根堆的性质，那么我们将其向上交换，直到满足小根堆的性质：
 
   <center class="half">
-      <img src="C:\Users\蓝\Desktop\电梯图片\堆换1.png" width="300"/>
-  	<img src="C:\Users\蓝\Desktop\电梯图片\堆换2.png" width="300"/>
-      <img src="C:\Users\蓝\Desktop\电梯图片\堆换3.png" width="300"/>
+      <img src="images\堆换1.png" width="300"/>
+  	<img src="images\堆换2.png" width="300"/>
+      <img src="images\堆换3.png" width="300"/>
   </center>
+
 
   事实上堆的插入就是把新的元素放到堆底，然后检查它是否符合堆的性质，如果符合就结束操作，如果不符合，那就和它的父亲交换一下，一直交换交换交换，直到符合堆的性质，那么插入就完成了。
 
@@ -184,13 +185,13 @@ void dijkstra(ALGraph g, int src, int dst)
 
   还是以上面这个为例子，假设我现在想要删除元素为0这个结点，首先我先将它和最后一个结点进行交换，将其删除：
 
-  ![](C:\Users\蓝\Desktop\电梯图片\删1.png)
+  ![](images\删1.png)
 
   然后发现不满足小根堆性质，将元素5这个结点，在与其两个孩子中关键字较小的进行交换，直到满足小根堆性质：
 
   <center class="half">
-      <img src="C:\Users\蓝\Desktop\电梯图片\删2.png" width="300"/>
-  	<img src="C:\Users\蓝\Desktop\电梯图片\删3.png" width="300"/>
+      <img src="images\删2.png" width="300"/>
+  	<img src="images\删3.png" width="300"/>
   </center>
 
 那么，小根堆的插入和删除操作的代码实现如下：
@@ -299,7 +300,7 @@ void dijkstra_heap(ALGraph g, int src, int dst)
 
   为什么这样可以从$O(ElogV)$降到$O(VlogV)$呢？是因为，原来的堆里面有$O(E)$个元素，但是其中有很多个重复结点的元素。除了第一个最小距离的元素是有用的，其他的都是在之前操作插入的结点，如果将它出堆的话，对其进行松弛操作是没有任何意义的，原因是因为新的距离不可能会更小。可以简单看个例子：
 
-  ![](C:\Users\蓝\Desktop\电梯图片\图1.png)
+  ![](images\图1.png)
 
   如果A先对C进行入堆，再从B到C进行入堆，则我们可以认为现在堆的排序如下`[(20,B),(60,C),(100,C)]`，当`(60,C)`出堆后，将其置为已访问过的并进行松弛操作，而当`(100,C)`出堆时，发现这个松弛操作已经在前面实现完毕了，那么这时再进行就只是浪费时间，所以我们将其跳过。即这样就是相当于可以把堆里面重复的顶点信息删除，只取每个元素的最短距离做处理。这样虽然堆里面是$O(E)$个顶点，但实际上操作时只动了$O(V)$个顶点。
 
