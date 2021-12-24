@@ -43,7 +43,7 @@ CSR中存在列索引和行偏移。CSR将稀疏邻接矩阵的行进行压缩�
 
 示例：
 
-![](images\CSR.png)
+<img src="images\CSR.png"/>
 
 算法包括朴素的Dijkstra和堆优化的Dijkstra以及一些小优化。这个放在代码讲解中说明。
 
@@ -164,11 +164,11 @@ void dijkstra(ALGraph g, int src, int dst)
 
   假设有一个堆是这样：
 
-  ![](images\堆1.png)
+  <img src="images\堆1.png"/>
 
   这时候我要插入一个元素为0的结点，那么我先将其插入到堆底：
 
-  ![](images\堆2.png)
+  <img src="images\堆2.png"/>
 
   发现不太符合小根堆的性质，那么我们将其向上交换，直到满足小根堆的性质：
 
@@ -300,7 +300,7 @@ void dijkstra_heap(ALGraph g, int src, int dst)
 
   为什么这样可以从$O(ElogV)$降到$O(VlogV)$呢？是因为，原来的堆里面有$O(E)$个元素，但是其中有很多个重复结点的元素。除了第一个最小距离的元素是有用的，其他的都是在之前操作插入的结点，如果将它出堆的话，对其进行松弛操作是没有任何意义的，原因是因为新的距离不可能会更小。可以简单看个例子：
 
-  ![](images\图1.png)
+  <img src="images\图1.png" />
 
   如果A先对C进行入堆，再从B到C进行入堆，则我们可以认为现在堆的排序如下`[(20,B),(60,C),(100,C)]`，当`(60,C)`出堆后，将其置为已访问过的并进行松弛操作，而当`(100,C)`出堆时，发现这个松弛操作已经在前面实现完毕了，那么这时再进行就只是浪费时间，所以我们将其跳过。即这样就是相当于可以把堆里面重复的顶点信息删除，只取每个元素的最短距离做处理。这样虽然堆里面是$O(E)$个顶点，但实际上操作时只动了$O(V)$个顶点。
 
@@ -396,26 +396,26 @@ CSR压缩算法：
 用CSR压缩的图信息来构建邻接表：
 
 ```c++
-		ArcNode* temp;		//本质上和原始的构建邻接表方式是一样的
-		for (int i = 1; i <= g.vexnum; i++)
+	ArcNode* temp;		//本质上和原始的构建邻接表方式是一样的
+	for (int i = 1; i <= g.vexnum; i++)
+	{
+		for (int j = beg_pos[i]; j <= beg_pos[i + 1] - 1; j++)	//通过行偏移量来确定哪些顶点是当前顶点的邻点
 		{
-			for (int j = beg_pos[i]; j <= beg_pos[i + 1] - 1; j++)	//通过行偏移量来确定哪些顶点是当前顶点的邻点
+			ArcNode* next = new ArcNode;
+			next->adjvex = csr[j];
+			next->value = dis[j];
+			next->nextarc = NULL;
+			if (g.vertices[i].firstarc == NULL)
+				g.vertices[i].firstarc = next;
+			else
 			{
-				ArcNode* next = new ArcNode;
-				next->adjvex = csr[j];
-				next->value = dis[j];
-				next->nextarc = NULL;
-				if (g.vertices[i].firstarc == NULL)
-					g.vertices[i].firstarc = next;
-				else
-				{
-					temp = g.vertices[i].firstarc;
-					while (temp->nextarc)
-						temp = temp->nextarc;
-					temp->nextarc = next;
-				}
+				temp = g.vertices[i].firstarc;
+				while (temp->nextarc)
+					temp = temp->nextarc;
+				temp->nextarc = next;
 			}
 		}
+	}
 ```
 
 ## 调试分析
